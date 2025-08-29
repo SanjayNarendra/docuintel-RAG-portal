@@ -1,0 +1,15 @@
+# Python cache & virtualenv
+__pycache__/
+venv
+
+# Secrets & configs
+.env
+
+# Logs
+logs/
+*.log
+
+# Build/Dist
+docuintel_RAG_portal.egg-info/
+dist/ 
+build/
