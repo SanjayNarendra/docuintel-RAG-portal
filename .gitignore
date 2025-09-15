@@ -13,3 +13,6 @@ logs/
 docuintel_RAG_portal.egg-info/
 dist/ 
 build/
+
+# data and experiments
+data/

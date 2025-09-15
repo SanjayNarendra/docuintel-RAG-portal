@@ -10,5 +10,6 @@ pypdf
 PyMuPDF
 structlog
 ipykernel
+pandas
 
 -e .
