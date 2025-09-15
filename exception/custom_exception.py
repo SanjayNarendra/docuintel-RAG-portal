@@ -1,8 +1,8 @@
 import sys
 import traceback
-from logger.custom_logger_archive import CustomLogger
+#from logger.custom_logger_archive import CustomLogger
 
-logger = CustomLogger().get_logger(__file__)
+#logger = CustomLogger().get_logger(__file__)
 
 class CustomException(Exception):
     def __init__(self, error_message, error_details:sys):
@@ -27,6 +27,6 @@ if __name__ == "__main__":
         print(a)
     except Exception as e:
         app_exc = CustomException(e, sys)
-        logger.error(app_exc)
+        #logger.error(app_exc)
         raise app_exc
 

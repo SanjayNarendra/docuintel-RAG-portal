@@ -1,8 +1,8 @@
 import yaml
 
-from logger.custom_logger import CustomLogger
-
-logger = CustomLogger().get_logger(__name__)  
+#from logger.custom_logger import CustomLogger
+from logger import GLOBAL_LOGGER as log
+#logger = CustomLogger().get_logger(__name__)  
 
 def load_config(config_path: str = 'config\config.yaml') -> dict:
     """Load a YAML configuration file and return its contents as a dictionary.
@@ -22,4 +22,4 @@ def load_config(config_path: str = 'config\config.yaml') -> dict:
 
 if __name__ == "__main__":
     load_config("config\config.yaml")
-    logger.info("Configuration file loaded successfully", config_path="config\config.yaml")
+    log.info("Configuration file loaded successfully", config_path="config\config.yaml")

@@ -1,8 +1,10 @@
 langchain
 langchain_community
+langchain-core[tracing]
 
 langchain-groq
 langchain_google_genai
+
 
 faiss-cpu
 python-dotenv
@@ -11,5 +13,7 @@ PyMuPDF
 structlog
 ipykernel
 pandas
+pytest
+streamlit
 
 -e .
