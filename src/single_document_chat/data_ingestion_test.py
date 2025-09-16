@@ -32,7 +32,7 @@ class SingleDocIngestor:
         try:
             documents = []
             for uploaded_file in uploaded_files:
-                unique_filename = f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+                unique_filename = f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.pdf"
                 temp_path = self.data_dir / unique_filename
                 
                 with open(temp_path, "wb") as f_out:
@@ -43,9 +43,9 @@ class SingleDocIngestor:
                 docs = loader.load()
                 documents.extend(docs)     
 
-            log.info("Document ingestion completed", num_documents=len(documents))
+            log.info("PDF files loaded", num_documents=len(documents))
 
-            return self._create_retriever(documents)  # calling  private method
+            return self._create_retriever(documents)
         
         except Exception as e:
             log.error("Document ingestion failed", error=str(e))
@@ -63,7 +63,7 @@ class SingleDocIngestor:
             vectorstore = FAISS.from_documents(documents=chunks, embedding=embeddings)
 
             # save FAISS index
-            vectorstore.save_local(str(self.faiss_dir))
+            vectorstore.save_local(str(self.faiss_dir), index_name="index")
             log.info("FAISS index created and saved", faiss_path=str(self.faiss_dir))
 
             retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5})

@@ -15,5 +15,6 @@ ipykernel
 pandas
 pytest
 streamlit
+docx2txt
 
 -e .

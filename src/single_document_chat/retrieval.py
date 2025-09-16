@@ -3,7 +3,7 @@ import os
 from operator import itemgetter
 from typing import List, Optional, Dict, Any
 from dotenv import load_dotenv
-import streamlit as st
+#import streamlit as st
 
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -11,6 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.runnables import RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -20,6 +21,9 @@ from exception.custom_exception import CustomException
 from logger import GLOBAL_LOGGER as log
 from prompt.prompt_library import PROMPT_REGISTRY
 from model.models import PromptType
+
+
+_SESSION_STORE: Dict[str, BaseChatMessageHistory] = {}
 
 
 class ConversationalRAG:
@@ -37,10 +41,12 @@ class ConversationalRAG:
             self.session_id = session_id
             self.retriever = retriever
             self.llm = self._load_llm()
+
             self.contextualize_prompt = PROMPT_REGISTRY[PromptType.CONTEXTUALIZE_QUESTION.value]
             self.qa_prompt = PROMPT_REGISTRY[PromptType.CONTEXT_QA.value] 
+            
             self.history_aware_retriever = create_history_aware_retriever(
-                self.retriever, self.llm, self.contextualize_prompt
+                llm=self.llm, retriever=self.retriever, prompt=self.contextualize_prompt
                 )
             log.info("Created history aware retriever", session_id=session_id)
             
@@ -72,9 +78,13 @@ class ConversationalRAG:
             raise CustomException("Error loading LLM", sys)
 
 
-    def _get_session_history(self):
+    def _get_session_history(self, session_id: str) -> BaseChatMessageHistory:
         try:
-            return ChatMessageHistory.get_history(self.session_id)
+            #return ChatMessageHistory.get_history(session_id)
+            if session_id not in _SESSION_STORE:
+                _SESSION_STORE[session_id] = ChatMessageHistory()
+            return _SESSION_STORE[session_id]
+        
         except Exception as e:
             log.error("Failed to get session history", error=str(e))
             raise CustomException("Error getting session history", sys)
@@ -86,7 +96,12 @@ class ConversationalRAG:
             if not os.path.isdir(index_path):
                 raise CustomException(f"FAISS index directory not found: {index_path}")
 
-            vectorstore = FAISS.load_local(index_path, embeddings)
+            vectorstore = FAISS.load_local(
+                index_path, 
+                embeddings, 
+                index_name="index",
+                allow_dangerous_deserialization=True,
+            )
             log.info("Loaded retriever from FAISS index", index_path=index_path)
             return vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 5})
 
