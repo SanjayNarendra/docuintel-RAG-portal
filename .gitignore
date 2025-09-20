@@ -1,9 +1,18 @@
 # Python cache & virtualenv
 __pycache__/
-venv
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+env/
+venv/
+*.egg-info/
+*.egg
+*.log
 
 # Secrets & configs
 .env
+.env.*
 
 # Logs
 logs/
@@ -14,5 +23,21 @@ docuintel_RAG_portal.egg-info/
 dist/ 
 build/
 
-# data and experiments
+# experiments
+notebook/
+
+# Data & archive
 data/
+archive/
+main_archive/
+*.pdf
+
+# LangChain-related
+faiss_index/
+*.faiss
+*.pkl
+
+# OS & editor files
+.DS_Store
+.vscode/
+.idea/
